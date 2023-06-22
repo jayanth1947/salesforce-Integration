@@ -114,6 +114,7 @@ global with sharing class apexRestGetDemo {
         global  List<Contact> contactList; 
     }
 
+    // wrapper class for the patch method
     global class ResponseWrapper{
         global Account accRec;
         global String message;
