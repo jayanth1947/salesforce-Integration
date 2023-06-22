@@ -1,11 +1,18 @@
 @RESTResource(urlMapping='/v1/Account/*')
 global with sharing class apexRestGetDemo {
 
+    // This is the post method and it is used for the updated information
     @httpPost
+
+    // Here we are declaring the paramters that is passed in the method
     global static Account  postAccount(String accName, String accNumber, String description, String industry){
+
+        // Creating a new Account Record and insert into the database
         Account accountRecord=new Account(Name = accName, AccountNumber=accNumber, Description=description,Industry=industry);
 
         insert accountRecord;
+
+        // Returning the account record
         return accountRecord;
     }
     // Here the get method is used for getting the record data
