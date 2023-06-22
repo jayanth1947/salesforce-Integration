@@ -1,6 +1,38 @@
 @RESTResource(urlMapping='/v1/Account/*')
 global with sharing class apexRestGetDemo {
 
+    // This is the Patch Method and it is used to update the records
+    @httpPatch
+    global static ResponseWrapper patchAccount(String rating, String accountNumber, String description){
+        RestRequest req=RestContext.request;
+        String requestURI=req.requestURI; //URI is a urlMapping in the RestResource line
+        String accountId=requestURI.subStringAfterLast('/');	//It will get the Id 
+
+        // Getting the list of account records
+        List<Account> accList=[SELECT Id FROM Account WHERE Id =:accountId];
+
+        Account accRec;
+
+        // Creating a new instance for the wrapper class
+        ResponseWrapper wrapper=new ResponseWrapper();
+
+        // Checking if the acclist has some values
+        if(accList!=null && accList.size()>0){
+            accRec=new Account(Id=accountId, Rating =rating, AccountNumber=accountNumber ,Description=description);
+            update accRec; //Here updating the account record
+
+            //Assigning the data to the wrapper class variables
+            wrapper.accRec=accRec;
+            wrapper.message='Account Record Updated';
+        }
+
+        // If the record does not exist the message will be shown to the user
+        else{
+            wrapper.message='Account Record Not Found';
+        }
+        return wrapper;
+    }
+
     // This is a http delete method to delete the record
     @httpDelete
     global static String deleteAccount(){
@@ -80,5 +112,10 @@ global with sharing class apexRestGetDemo {
     global class AccountWrapper{
         global Account accountRecord;
         global  List<Contact> contactList; 
+    }
+
+    global class ResponseWrapper{
+        global Account accRec;
+        global String message;
     }
 }
