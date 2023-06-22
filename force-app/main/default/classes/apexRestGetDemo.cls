@@ -1,6 +1,13 @@
 @RESTResource(urlMapping='/v1/Account/*')
 global with sharing class apexRestGetDemo {
 
+    @httpPost
+    global static Account  postAccount(String accName, String accNumber, String description, String industry){
+        Account accountRecord=new Account(Name = accName, AccountNumber=accNumber, Description=description,Industry=industry);
+
+        insert accountRecord;
+        return accountRecord;
+    }
     // Here the get method is used for getting the record data
     @httpGet
     global static AccountWrapper accountInformation(){
