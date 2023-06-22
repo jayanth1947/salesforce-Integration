@@ -1,6 +1,40 @@
 @RESTResource(urlMapping='/v1/Account/*')
 global with sharing class apexRestGetDemo {
 
+    // This is a http delete method to delete the record
+    @httpDelete
+    global static String deleteAccount(){
+
+        RestRequest req=RestContext.request;
+        String requestURI=req.requestURI; //URI is a urlMapping in the RestResource line
+        String accountId=requestURI.subStringAfterLast('/');	//It will get the Id 
+
+        // Account is retrived for deleting the record
+        List<Account> accountRec=[SELECT Id FROM Account WHERE Id=: accountId];
+
+        // Here if any records not equal to null and size is greater than 0 the record will be deleted
+        if(accountRec!=null && accountRec.size()>0){
+            try{
+                delete accountRec;
+                return '{"Message" : "Account is deleted"}';
+            }
+            catch(System.Exception ex){
+                String errorMessage=ex.getMessage();
+                return '{"Message": "'+errorMessage+'"}';
+            }
+            
+        }
+
+        // It will return the error message
+        else {
+            return '{"message": "Account is not deleted"}';
+        }
+        
+
+    }
+
+
+
     // This is the post method and it is used for the updated information
     @httpPost
 
