@@ -18,8 +18,10 @@ global with sharing class openCageDemo {
 
         //Encoded the string in UTF format
         String encodedString=EncodingUtil.urlEncode(address, 'UTF-8');
+
         // Final Endpoint url dynamically
         String finalEndPoint =endPoint+'q='+encodedString+'&key=' + openKey +'&pretty=1&limit=1';
+
         // Creating a neww Http instance for request and response
         Http http=new Http();
         HttpRequest httpReq=new HttpRequest();
@@ -48,8 +50,12 @@ global with sharing class openCageDemo {
 
                     // Here we are accessing the first record
                     openCageResultHandler.results result=results.get(0);
+
+                    // Here we are assigning the latitude and logitute
                     acc.Location__Latitude__s=result.geometry.lat;
                     acc.Location__Longitude__s=result.geometry.lng;
+
+                    //Update the account after assigning the locations
                     update acc;
 
                     //Here we are displaying the data 
