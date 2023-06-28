@@ -1,6 +1,6 @@
 global with sharing class openCageDemo {
     
-    public static void forwardGeoCoding(){
+    public static void forwardGeoCoding(Id recordId){
 
         // Storing the key and endpoint in the variables
         String endPoint=System.Label.OpenCageEndPoint;
@@ -9,8 +9,16 @@ global with sharing class openCageDemo {
         // Declare an Error message 
         String errorMessage='';
 
+        // Account data is stored in this variable
+        Account acc=[SELECT Id,Name, ShippingStreet,ShippingCity,ShippingState,ShippingCountry,ShippingPostalCode FROM Account where Id =:recordId];
+
+        //Storing the data in the address variable
+        String address=acc.ShippingStreet+', '+acc.ShippingCity+', '+acc.ShippingState+','+acc.ShippingCountry+','+acc.ShippingPostalCode;
+
+        //Encoded the string in UTF format
+        String encodedString=EncodingUtil.urlEncode(address, 'UTF-8');
         // Final Endpoint url dynamically
-        String finalEndPoint =endPoint+ 'q=Rua+Cafel%C3%A2ndia%2C+Carapicu%C3%ADba%2C+Brasil&key=' + openKey +'&pretty=1';
+        String finalEndPoint =endPoint+'q='+encodedString+'&key=' + openKey +'&pretty=1&limit=1';
         // Creating a neww Http instance for request and response
         Http http=new Http();
         HttpRequest httpReq=new HttpRequest();
@@ -25,8 +33,31 @@ global with sharing class openCageDemo {
             // Checking the status Code has success code
             if(response.getStatuscode()==200){
                 String body=response.getBody(); //response is stored in the body
-                System.debug(System.LoggingLevel.DEBUG, 'body' +body); //Displaying the body  
+
+                //System.debug(System.LoggingLevel.DEBUG, 'body' +body); //Displaying the body  
+
+                // Here in the openCageResultHandler will have the methods that we need to access and we are deserializing the data
+                openCageResultHandler openCageData=(openCageResultHandler)System.JSON.deserialize(body,openCageResultHandler.class);
+
+                //Here the result data is stored in the list format
+                List<openCageResultHandler.results> results =openCageData.results;
+
+                // Checking whether the result has some data or not
+                if(results!=null && results.size()>0){
+
+                    // Here we are accessing the first record
+                    openCageResultHandler.results result=results.get(0);
+
+                    //Here we are displaying the data 
+                    System.debug(System.LoggingLevel.DEBUG, 'result' +result); 
+                }
             }
+            else {
+                errorMessage ='Unexpected Error While communicating with the openCage API'
+                + 'Status' + response.getStatus()+ 'and status Code' + response.getStatuscode();
+                System.debug(System.LoggingLevel.DEBUG,'Exception Executed' + errorMessage);
+            }
+
             
         } catch (System.Exception e) {
             
