@@ -1,5 +1,6 @@
 global with sharing class openCageDemo {
     
+    @future(callout=true)
     public static void forwardGeoCoding(Id recordId){
 
         // Storing the key and endpoint in the variables
@@ -10,7 +11,7 @@ global with sharing class openCageDemo {
         String errorMessage='';
 
         // Account data is stored in this variable
-        Account acc=[SELECT Id,Name, ShippingStreet,ShippingCity,ShippingState,ShippingCountry,ShippingPostalCode FROM Account where Id =:recordId];
+        Account acc=[SELECT Id,Name,Location__Longitude__s,Location__Latitude__s, ShippingStreet,ShippingCity,ShippingState,ShippingCountry,ShippingPostalCode FROM Account where Id =:recordId];
 
         //Storing the data in the address variable
         String address=acc.ShippingStreet+', '+acc.ShippingCity+', '+acc.ShippingState+','+acc.ShippingCountry+','+acc.ShippingPostalCode;
@@ -47,11 +48,16 @@ global with sharing class openCageDemo {
 
                     // Here we are accessing the first record
                     openCageResultHandler.results result=results.get(0);
+                    acc.Location__Latitude__s=result.geometry.lat;
+                    acc.Location__Longitude__s=result.geometry.lng;
+                    update acc;
 
                     //Here we are displaying the data 
                     System.debug(System.LoggingLevel.DEBUG, 'result' +result); 
                 }
             }
+
+            // Whether any error will come and we will get the error message
             else {
                 errorMessage ='Unexpected Error While communicating with the openCage API'
                 + 'Status' + response.getStatus()+ 'and status Code' + response.getStatuscode();
