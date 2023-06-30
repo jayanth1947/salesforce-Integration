@@ -253,6 +253,65 @@ global with sharing class freshDeskDemo {
             }
 
         }
+
+
+        public static void getContactTickets(String email){
+
+            String errorMessage='';
+
+            //Here the endpoint is assigned for contact creation
+            String endPoint=TICKET_ENDPOINT+'?email='+EncodingUtil.urlEncode(email,'UTF-8');
+
+            // We are assigning the customLabel of freshdesk for authentication purpose
+            String credential=System.Label.FreshDeskKey; //base64 encoded
+    
+            // Creating a neww Http instance for request and response
+            Http http=new Http();
+            HttpRequest httpReq=new HttpRequest();
+            httpReq.setMethod('GET'); //Method for performing action
+            httpReq.setEndpoint(endPoint); //setting the endpoint
+
+            // Here we are setting the authentication as basic and also encode for base64
+            // base64Encode(inputBlob) - Converts a Blob to an unencoded String representing its normal form.
+            httpReq.setHeader('Authorization','Basic '+EncodingUtil.base64Encode(Blob.valueOf(credential)));
+            httpReq.setHeader('Content-Type','application/json'); //Passing the headers as JSON 
+            HttpResponse response=new HttpResponse(); //Responsible for storing the response
+    
+            try {
+                response=http.send(httpReq); //Sending the request
+                // Checking the status Code has success code
+                if(response.getStatuscode()==200){
+                    String responseBody=response.getBody(); //response is stored in the body
+                    System.debug(System.LoggingLevel.DEBUG, 'body' +responseBody);
+                    //List<freshDeskResult> contacts=(List<freshDeskResult>)System.JSON.deserialize(responseBody,List<freshDeskResult>.class);
+                    
+        
+                }
+            
+            else {
+                errorMessage ='Unexpected Error While communicating with the openCage API'
+                + 'Status' + response.getStatus()+ 'and status Code' + response.getStatuscode();
+                System.debug(System.LoggingLevel.DEBUG,'Exception Executed' + errorMessage);
+            }
+
+        }
+        
+            catch (System.Exception e) {
+                if(String.valueOf(e.getMessage()).startsWith('Unauthorized endpoint')){
+                    errorMessage='Unauthorize endpoint an Administrator must go to setup -> '+
+                     'Remote Site Settings and add ' + ' '+ endpoint +'Endpoint';
+                }
+    
+                else {
+                    errorMessage ='Unexpected Error While communicating with the openCage API'
+                    + 'Status' + response.getStatus()+ 'and status Code' + response.getStatuscode();
+                    System.debug(System.LoggingLevel.DEBUG,'Exception Executed' + errorMessage);
+                }
+            }
+
+        }
+
+
     }
 
 
