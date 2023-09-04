@@ -24,7 +24,7 @@ public with sharing class GoogleUtil {
 
         String baseUrl=System.URL.getSalesforceBaseUrl().toExternalForm()+'/apex/'+g_Cred.PageName__c;
 
-        String authUrl =g_Cred.auth_url__c+'?scope='+g_Cred.scope__c+'&access_type=offline';
+        String authUrl =g_Cred.auth_url__c+ '?scope=' +g_Cred.scope__c+'&access_type=offline';
 
         authUrl += '&include_granted_scopes=true&response_type=code&state'+Crypto.getRandomInteger();
         authUrl += '&redirect_url='+baseUrl+'&client_id='+g_Cred.client_id__c;
@@ -60,7 +60,7 @@ public with sharing class GoogleUtil {
 
         String requestBody ='code='+code+'&client_id='+g_Cred.client_id__c+
                             '&client_secret='+g_Cred.client_secret__c+
-                            '&redirecr_url'+baseUrl+'&grant_type=authorization_code';
+                            '&redirect_url'+baseUrl+'&grant_type=authorization_code';
 
         Http http = new Http();
         HttpRequest httpReq = prepareRequest(endPoint,'','POST',requestBody,'application/x-www-form-urlencoded');
@@ -97,7 +97,7 @@ public with sharing class GoogleUtil {
             }
         }
          catch (Exception e) {
-            if (String.valueOf(e.getMessage().startsWith('Unauthorized endpoint')) 
+            if (String.valueOf(e.getMessage().startsWith('Unauthorized endpoint')) )
             {
                 errorMessage='Unauthorized endpoint: An Administrator occured';
         }
@@ -173,7 +173,7 @@ public with sharing class GoogleUtil {
 
         }
     } catch (Exception e) {
-        if (String.valueOf(e.getMessage().startsWith('Unauthorized endpoint')) {
+        if (String.valueOf(e.getMessage().startsWith('Unauthorized endpoint'))) {
             errorMessage='Unauthorized endpoint: An Administrator occured';
     }
     else {
@@ -227,8 +227,7 @@ public with sharing class GoogleUtil {
         }
     }
 
-    public static HttpRequest prepareRequest(String endPoint, String accessToken, String method, String requestBody,
-                                                String contentType) {
+    public static HttpRequest prepareRequest(String endPoint, String accessToken, String method, String requestBody, String contentType) {
         httpRequest httpReq =new httpRequest();
         httpReq.setMethod(method);
         httpReq.setEndpoint(endPoint);
